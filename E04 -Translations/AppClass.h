@@ -15,6 +15,7 @@ Date: 2017/05
 class Application
 {
 	matrix4 m_m4Object1;
+	matrix4 m_m4Object2;
 	MyMesh* m_pMesh = nullptr;
 	MyMesh* m_pMesh1 = nullptr;
 
