@@ -1,7 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+<<<<<<< HEAD
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
+=======
+# Visual Studio 15
+VisualStudioVersion = 15.0.26430.16
+>>>>>>> 70c67014aedc98c2b5f96ec3cc4e289e7c8b8249
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BasicX", "BasicX\BasicX.vcxproj", "{E745E25C-0143-42AC-A486-1395A4C972AE}"
 EndProject
@@ -120,7 +125,13 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "A06 - Octree", "A06 - Octre
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "24_Physics", "24_Physics\24_Physics.vcxproj", "{58CB6636-1057-466F-AB91-BADB3395421A}"
 EndProject
+<<<<<<< HEAD
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E03_Repository", "E03_Repository\E03_Repository.vcxproj", "{6D94413E-C0C7-46C2-85AE-690D1C400655}"
+=======
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "12_MeshClass_Del", "12_MeshClass_Del\12_MeshClass_Del.vcxproj", "{CA858340-FFC7-417E-8C6C-547CCA4C64EF}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "E04 -Translations", "E04 -Translations\E04 -Translations.vcxproj", "{4A7E5E2B-FA5F-46E3-82EC-8F782D7C5F35}"
+>>>>>>> 70c67014aedc98c2b5f96ec3cc4e289e7c8b8249
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -274,10 +285,21 @@ Global
 		{58CB6636-1057-466F-AB91-BADB3395421A}.Debug|x86.Build.0 = Debug|Win32
 		{58CB6636-1057-466F-AB91-BADB3395421A}.Release|x86.ActiveCfg = Release|Win32
 		{58CB6636-1057-466F-AB91-BADB3395421A}.Release|x86.Build.0 = Release|Win32
+<<<<<<< HEAD
 		{6D94413E-C0C7-46C2-85AE-690D1C400655}.Debug|x86.ActiveCfg = Debug|Win32
 		{6D94413E-C0C7-46C2-85AE-690D1C400655}.Debug|x86.Build.0 = Debug|Win32
 		{6D94413E-C0C7-46C2-85AE-690D1C400655}.Release|x86.ActiveCfg = Release|Win32
 		{6D94413E-C0C7-46C2-85AE-690D1C400655}.Release|x86.Build.0 = Release|Win32
+=======
+		{CA858340-FFC7-417E-8C6C-547CCA4C64EF}.Debug|x86.ActiveCfg = Debug|Win32
+		{CA858340-FFC7-417E-8C6C-547CCA4C64EF}.Debug|x86.Build.0 = Debug|Win32
+		{CA858340-FFC7-417E-8C6C-547CCA4C64EF}.Release|x86.ActiveCfg = Release|Win32
+		{CA858340-FFC7-417E-8C6C-547CCA4C64EF}.Release|x86.Build.0 = Release|Win32
+		{4A7E5E2B-FA5F-46E3-82EC-8F782D7C5F35}.Debug|x86.ActiveCfg = Debug|Win32
+		{4A7E5E2B-FA5F-46E3-82EC-8F782D7C5F35}.Debug|x86.Build.0 = Debug|Win32
+		{4A7E5E2B-FA5F-46E3-82EC-8F782D7C5F35}.Release|x86.ActiveCfg = Release|Win32
+		{4A7E5E2B-FA5F-46E3-82EC-8F782D7C5F35}.Release|x86.Build.0 = Release|Win32
+>>>>>>> 70c67014aedc98c2b5f96ec3cc4e289e7c8b8249
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -323,6 +345,11 @@ Global
 		{AA74BEEF-2484-4B8A-A9F4-ACB122220189} = {E0A09DA7-AF20-49C2-84DC-481ADDD01DCA}
 		{44D2C07B-798D-461B-9019-DFB240593888} = {5D1FB011-A2D8-4107-890B-BF1ACD0C0994}
 		{58CB6636-1057-466F-AB91-BADB3395421A} = {E0A09DA7-AF20-49C2-84DC-481ADDD01DCA}
+<<<<<<< HEAD
 		{6D94413E-C0C7-46C2-85AE-690D1C400655} = {75A6D539-8458-45DF-BE47-1376FB54C16E}
+=======
+		{CA858340-FFC7-417E-8C6C-547CCA4C64EF} = {E0A09DA7-AF20-49C2-84DC-481ADDD01DCA}
+		{4A7E5E2B-FA5F-46E3-82EC-8F782D7C5F35} = {13CD5CAF-2378-4851-9BEB-DF01D5A85C42}
+>>>>>>> 70c67014aedc98c2b5f96ec3cc4e289e7c8b8249
 	EndGlobalSection
 EndGlobal

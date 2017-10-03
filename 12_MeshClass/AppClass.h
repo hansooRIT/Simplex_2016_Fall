@@ -11,9 +11,15 @@ Date: 2017/05
 #include "imgui\ImGuiObject.h"
 
 #include "MyMesh.h"
+#include <vector>
 
 class Application
 {
+	//Vectors for my mesh class and the coordinate matrices.
+	std::vector<matrix4> m_m4Objects;
+	std::vector<MyMesh*> MeshVector;
+
+	matrix4 m_m4Object1;
 	MyMesh* m_pMesh = nullptr;
 	MyMesh* m_pMesh1 = nullptr;
 
