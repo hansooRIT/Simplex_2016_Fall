@@ -29,6 +29,9 @@ void Application::InitVariables(void)
 	m_stopsList.push_back(vector3(5.0f, 2.0f, -5.0f));
 
 	m_stopsList.push_back(vector3(1.0f, 3.0f, -5.0f));
+
+	currentIndex = 0;
+	goalIndex = 1;
 }
 void Application::Update(void)
 {
@@ -53,20 +56,21 @@ void Application::Display(void)
 	static float fTimer = 0;	//store the new timer
 	static uint uClock = m_pSystem->GenClock(); //generate a new clock for that timer
 	fTimer += m_pSystem->GetDeltaTime(uClock); //get the delta time for that timer
+	float fMax = 2.0f;
 
+	float fPercent = MapValue(fTimer, 0.0f, fMax, 0.0f, 1.0f);
 	//calculate the current position
-	vector3 v3CurrentPos;
-	
-
-
-
-
-	//your code goes here
-	v3CurrentPos = vector3(0.0f, 0.0f, 0.0f);
-	//-------------------
-	
-
-
+	vector3 v3CurrentPos = glm::lerp(m_stopsList[currentIndex], m_stopsList[goalIndex], fPercent);
+	if (fTimer > fMax) {
+		currentIndex = goalIndex;
+		if (goalIndex != m_stopsList.size() - 1) {
+			goalIndex++;
+		}
+		else {
+			goalIndex = 0;
+		}
+		fTimer = 0;
+	}
 	
 	matrix4 m4Model = glm::translate(v3CurrentPos);
 	m_pModel->SetModelMatrix(m4Model);
