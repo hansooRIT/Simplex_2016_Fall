@@ -1,4 +1,6 @@
 #include "MyMesh.h"
+#include <vector>
+
 void MyMesh::Init(void)
 {
 	m_bBinded = false;
@@ -275,10 +277,34 @@ void MyMesh::GenerateCone(float a_fRadius, float a_fHeight, int a_nSubdivisions,
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//Calculate the top and bottom centers of the cone to connect the tris to.
+	vector3 topCenter = vector3(0.0f, a_fHeight/2, 0.0f);
+	vector3 bottomCenter = vector3(0.0f, -a_fHeight / 2, 0.0f);
 
+	//Store all of the points
+	std::vector<vector3> divisionPoints;
+
+	//And set a constant to calculate the subdivision angles
+	float distanceCalc = 360.0f / a_nSubdivisions;
+
+	//Loop through and generate the bottom part of the cone with different angles.
+	//Each point should be (x value calculated by the radius * sin, the height, and the radius * cos)
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		divisionPoints.push_back(vector3(a_fRadius * sin((distanceCalc * i) * PI / 180.0f), -a_fHeight / 2, a_fRadius * cos((distanceCalc * i) * PI / 180.0f)));
+	}
+
+	//Then, connect the points via tris.
+	//Connect 2 adjacent tris to the top and bottom centers.
+	for (int i = 0; i < divisionPoints.size(); i++) {
+		if (i < divisionPoints.size() - 1) {
+			AddTri(divisionPoints[i], divisionPoints[i + 1], topCenter);
+			AddTri(divisionPoints[i+1], divisionPoints[i], bottomCenter);
+		}
+		else {
+			AddTri(divisionPoints[i], divisionPoints[0], topCenter);
+			AddTri(divisionPoints[0], divisionPoints[i], bottomCenter);
+		}
+	}
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();
@@ -299,9 +325,38 @@ void MyMesh::GenerateCylinder(float a_fRadius, float a_fHeight, int a_nSubdivisi
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//Set top and bottom centers again.
+	vector3 topCenter = vector3(0.0f, a_fHeight/2, 0.0f);
+	vector3 bottomCenter = vector3(0.0f, -a_fHeight/2, 0.0f);
+
+	//Have containers for top and bottom points
+	std::vector<vector3> topDivisionPoints;
+	std::vector<vector3> bottomDivisionPoints;
+
+	//And set the constant for angle calculation.
+	float distanceCalc = 360.0 / a_nSubdivisions;
+
+	//Loop through to get the top and bottom vertex points.
+	//Calculate the points with (radius * sin), (height of the point), (radius * cos))
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		bottomDivisionPoints.push_back(vector3(a_fRadius * sin(distanceCalc * i * PI / 180.0f), -a_fHeight / 2, a_fRadius * cos(distanceCalc * i * PI / 180.0f)));
+		topDivisionPoints.push_back(vector3(a_fRadius * sin(distanceCalc * i * PI / 180.0f), a_fHeight / 2, a_fRadius * cos(distanceCalc * i * PI / 180.0f)));
+	}
+
+	//Draw the quads and tris.
+	//Connect the tops of the cylinders with tri, and connect the sides of the cyliners with quads.
+	for (int i = 0; i < topDivisionPoints.size(); i++) {
+		if (i < topDivisionPoints.size() - 1) {
+			AddQuad(bottomDivisionPoints[i], bottomDivisionPoints[i+1], topDivisionPoints[i], topDivisionPoints[i + 1]);
+			AddTri(topCenter, topDivisionPoints[i], topDivisionPoints[i + 1]);
+			AddTri(bottomCenter, bottomDivisionPoints[i + 1], bottomDivisionPoints[i]);
+		}
+		else {
+			AddQuad(bottomDivisionPoints[i], bottomDivisionPoints[0], topDivisionPoints[i], topDivisionPoints[0]);
+			AddTri(topCenter, topDivisionPoints[i], topDivisionPoints[0]);
+			AddTri(bottomCenter, bottomDivisionPoints[0], bottomDivisionPoints[i]);
+		}
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -329,9 +384,42 @@ void MyMesh::GenerateTube(float a_fOuterRadius, float a_fInnerRadius, float a_fH
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//Vectors for storing the vertices
+	//Separate for the bottom, and top inner and outer segments.
+	std::vector<vector3> topOuterDivisionPoints;
+	std::vector<vector3> topInnerDivisionPoints;
+	std::vector<vector3> bottomOuterDivisionPoints;
+	std::vector<vector3> bottomInnerDivisionPoints;
+
+	//And have the constant for the angles
+	float distanceCalc = 360.0 / a_nSubdivisions;
+
+	//Generate the values in the for loop.
+	//Vertex = ((small/large radius) * sin of the angle), (height (top or bottom)), ((small/large radius) * cos of angle)
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		bottomOuterDivisionPoints.push_back(vector3(a_fOuterRadius * sin(distanceCalc * i * PI / 180.0f), -a_fHeight / 2, a_fOuterRadius * cos(distanceCalc * i * PI / 180.0f)));
+		topOuterDivisionPoints.push_back(vector3(a_fOuterRadius * sin(distanceCalc * i * PI / 180.0f), a_fHeight / 2, a_fOuterRadius * cos(distanceCalc * i * PI / 180.0f)));
+		bottomInnerDivisionPoints.push_back(vector3(a_fInnerRadius * sin(distanceCalc * i * PI / 180.0f), -a_fHeight / 2, a_fInnerRadius * cos(distanceCalc * i * PI / 180.0f)));
+		topInnerDivisionPoints.push_back(vector3(a_fInnerRadius * sin(distanceCalc * i * PI / 180.0f), a_fHeight / 2, a_fInnerRadius * cos(distanceCalc * i * PI / 180.0f)));
+	}
+
+	//Then render the quads.
+	//Connect both inner sections, both outer sections, bottom outer and top outer, and bottom inner and top inner
+	//Else is to connect last index with the first index, to make a closed shape.
+	for (int i = 0; i < topOuterDivisionPoints.size(); i++) {
+		if (i < topOuterDivisionPoints.size() - 1) {
+			AddQuad(bottomOuterDivisionPoints[i + 1], bottomOuterDivisionPoints[i], bottomInnerDivisionPoints[i + 1], bottomInnerDivisionPoints[i]);
+			AddQuad(bottomOuterDivisionPoints[i], bottomOuterDivisionPoints[i + 1], topOuterDivisionPoints[i], topOuterDivisionPoints[i + 1]);
+			AddQuad(topOuterDivisionPoints[i], topOuterDivisionPoints[i + 1], topInnerDivisionPoints[i], topInnerDivisionPoints[i + 1]);
+			AddQuad(bottomInnerDivisionPoints[i + 1], bottomInnerDivisionPoints[i], topInnerDivisionPoints[i + 1], topInnerDivisionPoints[i]);
+		}
+		else {
+			AddQuad(bottomOuterDivisionPoints[0], bottomOuterDivisionPoints[i], bottomInnerDivisionPoints[0], bottomInnerDivisionPoints[i]);
+			AddQuad(bottomOuterDivisionPoints[i], bottomOuterDivisionPoints[0], topOuterDivisionPoints[i], topOuterDivisionPoints[0]);
+			AddQuad(topOuterDivisionPoints[i], topOuterDivisionPoints[0], topInnerDivisionPoints[i], topInnerDivisionPoints[0]);
+			AddQuad(bottomInnerDivisionPoints[0], bottomInnerDivisionPoints[i], topInnerDivisionPoints[0], topInnerDivisionPoints[i]);
+		}
+	}
 
 	// Adding information about color
 	CompleteMesh(a_v3Color);
@@ -361,6 +449,7 @@ void MyMesh::GenerateTorus(float a_fOuterRadius, float a_fInnerRadius, int a_nSu
 	Release();
 	Init();
 
+
 	// Replace this with your code
 	GenerateCube(a_fOuterRadius * 2.0f, a_v3Color);
 	// -------------------------------
@@ -380,16 +469,47 @@ void MyMesh::GenerateSphere(float a_fRadius, int a_nSubdivisions, vector3 a_v3Co
 		GenerateCube(a_fRadius * 2.0f, a_v3Color);
 		return;
 	}
-	if (a_nSubdivisions > 6)
-		a_nSubdivisions = 6;
+	//Removed the subdivision limit to make the sphere more "sphere" like.
+	/*if (a_nSubdivisions > 6)
+		a_nSubdivisions = 6;*/
 
 	Release();
 	Init();
 
-	// Replace this with your code
-	GenerateCube(a_fRadius * 2.0f, a_v3Color);
-	// -------------------------------
+	//Containers for the vertices.
+	//Only vectors this time as we will be rendering as we go.
+	vector3 point1;
+	vector3 point2;
+	vector3 point3;
+	vector3 point4;
 
+	//Constants for calculating angles
+	//2 separate variables this time for longitude and latitude.
+	float theta = 2 * PI / a_nSubdivisions;
+	float phi = PI / a_nSubdivisions;
+
+	//Nested for loop for generating the vertices.
+	for (int i = 0; i < a_nSubdivisions; i++) {
+		//Generate the angles for the longitude
+		float longitudeL = phi * i;
+		float longitudeR = phi * (i + 1);
+		for (int j = 0; j < a_nSubdivisions; j++) {
+			//Then generate the angles for the latitude
+			float latitudeL = theta * j;
+			float latitudeR = theta * (j + 1);
+
+			//Create the points using the newly formed angles
+			//General paradigm is (radius * sin(latitude) * sin(longitude)), (radius * cos(longitude)), (radius * cos(latitude) * sin(longitude))
+			point1 = vector3(a_fRadius * sin(latitudeL) * sin(longitudeL), a_fRadius * cos(longitudeL), a_fRadius * cos(latitudeL) * sin(longitudeL));
+			point2 = vector3(a_fRadius * sin(latitudeL) * sin(longitudeR), a_fRadius * cos(longitudeR), a_fRadius * cos(latitudeL) * sin(longitudeR) );
+			point3 = vector3(a_fRadius * sin(latitudeR) * sin(longitudeL), a_fRadius * cos(longitudeL), a_fRadius * cos(latitudeR) * sin(longitudeL) );
+			point4 = vector3(a_fRadius * sin(latitudeR) * sin(longitudeR), a_fRadius * cos(longitudeR), a_fRadius * cos(latitudeR) * sin(longitudeR) );
+			
+			//Then render them immediately afterwards.
+			//Better this way in this specific case, since we have all of the data of the connected vertices off the bat from the nested loop.
+			AddQuad(point1, point2, point3, point4);
+		}
+	}
 	// Adding information about color
 	CompleteMesh(a_v3Color);
 	CompileOpenGL3X();

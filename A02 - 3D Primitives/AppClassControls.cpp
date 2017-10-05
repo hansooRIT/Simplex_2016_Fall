@@ -19,11 +19,11 @@ void Application::ProcessMousePressed(sf::Event a_event)
 	case sf::Mouse::Button::Left:
 		gui.m_bMousePressed[0] = true;
 		break;
-	case sf::Mouse::Button::Middle:
+	case sf::Mouse::Button::Right:
 		gui.m_bMousePressed[1] = true;
 		m_bArcBall = true;
 		break;
-	case sf::Mouse::Button::Right:
+	case sf::Mouse::Button::Middle:
 		gui.m_bMousePressed[2] = true;
 		m_bFPC = true;
 		break;
@@ -40,11 +40,11 @@ void Application::ProcessMouseReleased(sf::Event a_event)
 	case sf::Mouse::Button::Left:
 		gui.m_bMousePressed[0] = false;
 		break;
-	case sf::Mouse::Button::Middle:
+	case sf::Mouse::Button::Right:
 		gui.m_bMousePressed[1] = false;
 		m_bArcBall = false;
 		break;
-	case sf::Mouse::Button::Right:
+	case sf::Mouse::Button::Middle:
 		gui.m_bMousePressed[2] = false;
 		m_bFPC = false;
 		break;
