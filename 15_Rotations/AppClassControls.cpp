@@ -72,6 +72,7 @@ void Application::ProcessKeyPressed(sf::Event a_event)
 	default: break;
 	case sf::Keyboard::Space:
 		break;
+
 	}
 	//gui
 	gui.io.KeysDown[a_event.key.code] = true;
@@ -129,6 +130,9 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 					m_uActCont = 7;
 			}
 		}
+		break;
+	case sf::Keyboard::R:
+		m_v3Rotation = vector3(0.0f, 0.0f, 0.0f);
 		break;
 	}
 
@@ -414,6 +418,29 @@ void Application::ProcessKeyboard(void)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
 		m_pCameraMngr->MoveVertical(fSpeed);
 #pragma endregion
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::X)) {
+		if (fMultiplier) {
+			m_v3Rotation.x -= 0.1f;
+		}
+		else {
+			m_v3Rotation.x += 0.1f;
+		}
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y)) {
+		if (fMultiplier) {
+			m_v3Rotation.y -= 0.1f;
+		}
+		else {
+			m_v3Rotation.y += 0.1f;
+		}
+	}if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z)) {
+		if (fMultiplier) {
+			m_v3Rotation.z -= 0.1f;
+		}
+		else {
+			m_v3Rotation.z += 0.1f;
+		}
+	}
 }
 //Joystick
 void Application::ProcessJoystick(void)
