@@ -20,7 +20,11 @@ class Application
 {
 	uint m_uOrbits = 0; //number of shapes starting at 3 and increasing in sides
 	std::vector<uint> m_shapeList; //shape index for circles
-	String m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	std::vector<std::vector<vector3>> masterStopList; //List of stops for each loop 
+	std::vector<uint> currentStopIndex; //List of ints for keeping track of current index points
+	std::vector<uint> goalStopIndex; //List of ints for keeping track of goal index points
+	std::vector<uint> colorList; //List of color integers for changing the colors of the torus.
+	String m_sProgrammer = "HanSoo Lee - hxl9400@rit.edu";
 	
 private:
 	static ImGuiObject gui; //GUI object
