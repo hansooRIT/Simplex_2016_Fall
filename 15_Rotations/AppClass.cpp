@@ -2,7 +2,7 @@
 void Application::InitVariables(void)
 {
 	////Change this to your name and email
-	//m_sProgrammer = "Alberto Bobadilla - labigm@rit.edu";
+	m_sProgrammer = "HanSoo Lee - hxl9400@rit.edu";
 
 	////Alberto needed this at this position for software recording.
 	//m_pWindow->setPosition(sf::Vector2i(710, 0));
@@ -45,8 +45,8 @@ void Application::Display(void)
 	matrix4 m4Rotation = glm::rotate(IDENTITY_M4, fTimer * 60.0f, vector3(0.0f, 0.0f, 1.0f));
 
 	//quaternion q1 = glm::angleAxis(90.0f, vector3(0.0f, 0.0f, 1.0f));
-	quaternion q1 = glm::quat(m_v3Rotation);
-	matrix4 m4Model = ToMatrix4(q1);
+	//quaternion q1 = glm::quat(m_v3Rotation);
+	matrix4 m4Model = glm::toMat4(m_qOrientation);
 	
 	/*for (uint i = 0; i < 2500; ++i)
 		m4Model = m4Rotation * glm::translate(IDENTITY_M4, vector3(2.5f, 0.0f, 0.0f)) * glm::transpose(m4Rotation);
