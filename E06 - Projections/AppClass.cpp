@@ -56,7 +56,6 @@ void Application::Display(void)
 		m_pCamera->ResetCamera();
 		break;
 	case 2:
-		m_pCamera->ResetCamera();
 		break;
 	case 3:
 		m_pCamera->ResetCamera();
