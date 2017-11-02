@@ -145,6 +145,11 @@ void MyMesh::AddQuad(vector3 a_vBottomLeft, vector3 a_vBottomRight, vector3 a_vT
 	AddVertexPosition(a_vBottomRight);
 	AddVertexPosition(a_vTopRight);
 }
+std::vector<vector3> Simplex::MyMesh::GetVertexList(void)
+{
+	return m_lVertexPos;
+}
+
 void MyMesh::GenerateCube(float a_fSize, vector3 a_v3Color)
 {
 	if (a_fSize < 0.01f)
