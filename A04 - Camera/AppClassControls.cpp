@@ -122,8 +122,7 @@ void Application::ProcessKeyReleased(sf::Event a_event)
 			}
 		}
 		break;
-	}
-
+	}	
 	//gui
 	gui.io.KeysDown[a_event.key.code] = false;
 	gui.io.KeyCtrl = a_event.key.control;
@@ -368,7 +367,12 @@ void Application::CameraRotation(float a_fSpeed)
 		fDeltaMouse = static_cast<float>(MouseY - CenterY);
 		fAngleX += fDeltaMouse * a_fSpeed;
 	}
+
 	//Change the Yaw and the Pitch of the camera
+	//Feed in angles for pitch and yaw for calculation in CalculateViewMatrix()
+	m_pCamera->m_pitchYawRoll.x += fAngleX;
+	m_pCamera->m_pitchYawRoll.y -= fAngleY;
+
 	SetCursorPos(CenterX, CenterY);//Position the mouse in the center
 }
 //Keyboard
@@ -385,6 +389,35 @@ void Application::ProcessKeyboard(void)
 
 	if (fMultiplier)
 		fSpeed *= 5.0f;
+	
+	//Keyboard input for camera movement.
+	//The commented out code tries to move with the direction of the camera, but it breaks.
+	//The broken code in conjunction with the commented out code in MyCamera makes the rotation freak out when you try to rotate.
+	//Non commented code simply moves with global coordinates.
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
+		//Translate forward
+		//m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + vector3(0.0, 0.0, -0.1f) * m_pCamera->m_v3forward, m_pCamera->GetTarget(), m_pCamera->GetUp());
+		m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + (vector3(0.0, 0.0, -0.1f)), m_pCamera->GetTarget(), m_pCamera->GetUp());
+
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
+	{
+		//Translate backwards
+		//m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + vector3(0.0, 0.0, 0.1f) * m_pCamera->m_v3forward, m_pCamera->GetTarget(), m_pCamera->GetUp());
+		m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + vector3(0.0f, 0.0f, 0.1f), m_pCamera->GetTarget(), m_pCamera->GetUp());
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+		//Translate to the left
+		//m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + vector3(-0.1f, 0.0, 0.0f) * m_pCamera->m_v3forward, m_pCamera->GetTarget(), m_pCamera->GetUp());
+		m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + vector3(-0.1f, 0.0f, 0.0f), m_pCamera->GetTarget(), m_pCamera->GetUp());
+
+	}
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+		//Translate to the right
+		//m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + vector3(0.1f, 0.0, 0.0f) * m_pCamera->m_v3forward, m_pCamera->GetTarget(), m_pCamera->GetUp());
+		m_pCamera->SetPositionTargetAndUp(m_pCamera->GetPosition() + vector3(0.1f, 0.0f, 0.0f), m_pCamera->GetTarget(), m_pCamera->GetUp());
+	}
 #pragma endregion
 }
 //Joystick
@@ -409,6 +442,7 @@ void Application::ProcessJoystick(void)
 		fHorizontalSpeed *= 3.0f;
 		fVerticalSpeed *= 3.0f;
 	}
+		
 #pragma endregion
 #pragma region Camera Orientation
 	//Change the Yaw and the Pitch of the camera

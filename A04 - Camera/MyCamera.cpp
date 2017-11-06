@@ -24,6 +24,12 @@ matrix4 Simplex::MyCamera::GetProjectionMatrix(void) { return m_m4Projection; }
 
 matrix4 Simplex::MyCamera::GetViewMatrix(void) { CalculateViewMatrix(); return m_m4View; }
 
+vector3 Simplex::MyCamera::GetPosition(void) { return m_v3Position; }
+
+vector3 Simplex::MyCamera::GetTarget(void) { return m_v3Target;  }
+
+vector3 Simplex::MyCamera::GetUp(void) { return m_v3Up;  }
+
 Simplex::MyCamera::MyCamera()
 {
 	Init(); //Init the object with default values
@@ -129,14 +135,31 @@ void Simplex::MyCamera::SetPositionTargetAndUp(vector3 a_v3Position, vector3 a_v
 {
 	m_v3Position = a_v3Position;
 	m_v3Target = a_v3Target;
-	m_v3Up = a_v3Position + a_v3Upward;
+	m_v3Up = a_v3Upward;
 	CalculateProjectionMatrix();
 }
 
 void Simplex::MyCamera::CalculateViewMatrix(void)
 {
-	//Calculate the look at
-	m_m4View = glm::lookAt(m_v3Position, m_v3Target, m_v3Up);
+	//Calculate rotation and translation matrices using quaternions.
+	quaternion pitch = glm::angleAxis(m_pitchYawRoll.x, AXIS_X);
+	quaternion yaw = glm::angleAxis(m_pitchYawRoll.y, AXIS_Y);
+	quaternion orientation = glm::normalize(pitch * yaw);
+	matrix4 rotate = ToMatrix4(orientation);
+	matrix4 translate = glm::translate(IDENTITY_M4, -1.0f * (m_v3Target));
+
+	//Combine the two to get the final view matrix.
+	//This will end up rotating the camera.
+	m_m4View = rotate * translate;
+
+	//Cross product of pitch and yaw for forward vector calculation
+	//Calculate this in order to move in direction that camera is facing.
+	//Commented out forward and up calculation, as they are currently making the rotation of the camera freak out.
+	quaternion cross = glm::cross(pitch, yaw);
+	//m_v3forward = glm::rotate(cross, glm::normalize(m_v3Target - m_v3Position));
+	m_v3right = glm::cross(m_v3forward, AXIS_Y);
+	//m_v3Up = glm::cross(m_v3forward, m_v3right);
+	m_v3Target = (m_v3Position + m_v3forward);
 }
 
 void Simplex::MyCamera::CalculateProjectionMatrix(void)

@@ -41,7 +41,7 @@ void Application::Display(void)
 	matrix4 m4Model = IDENTITY_M4;
 	float fMax = 5.0f;
 
-	vector3 v3Stop0 = vector3(0.0f, 0.0f, 0.0f);
+	vector3 v3Stop0 = vector3(0, 0, 0);
 	vector3 v3Stop1 = vector3(5.0f, 0.0f, 0.0f);
 	vector3 v3Stop2 = vector3(0.0f, 3.0f, 0.0f);
 
@@ -60,7 +60,7 @@ void Application::Display(void)
 
 	float fPercent = MapValue(fCurrentTime, 0.0f, fMax, 0.0f, 1.0f);
 	vector3 v3Current = glm::lerp(v3Stop1, v3Stop2, fPercent);
-	m4Model = glm::translate(IDENTITY_M4, v3Current);
+	m4Model = glm::translate(v3Current);
 	if (fCurrentTime > fMax) {
 		startTime = GetTickCount();
 	}
@@ -76,7 +76,6 @@ void Application::Display(void)
 	//matrix4 m4Model = m4Scale * m4Translate;
 
 	m_pMesh->Render(m4Projection, m4View, m4Model);
-
 
 	m_pMesh->Render(m4Projection, m4View, glm::translate(IDENTITY_M4, v3Stop0) * glm::scale(vector3(0.1f)));
 	m_pMesh->Render(m4Projection, m4View, glm::translate(IDENTITY_M4, v3Stop1) * glm::scale(vector3(0.1f)));

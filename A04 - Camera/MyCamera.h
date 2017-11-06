@@ -28,7 +28,12 @@ class MyCamera
 
 	matrix4 m_m4View; //View matrix
 	matrix4 m_m4Projection; //Projection Matrix
+
 public:
+	//public reference to pitch and yaw for rotation
+	vector3 m_pitchYawRoll = vector3(0.0, 0.0, 0.0);
+	vector3 m_v3forward = vector3(0.0, 0.0, 1.0f);
+	vector3 m_v3right = vector3(1.0f, 0.0, 0.0f);
 	/*
 	USAGE: Constructor
 	ARGUMENTS: ---
