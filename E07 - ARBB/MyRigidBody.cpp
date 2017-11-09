@@ -84,12 +84,57 @@ void MyRigidBody::SetModelMatrix(matrix4 a_m4ModelMatrix)
 
 	m_m4ToWorld = a_m4ModelMatrix;
 	
-	//your code goes here---------------------
 	m_v3MinG = m_v3MinL;
 	m_v3MaxG = m_v3MaxL;
-	//----------------------------------------
 
-	//we calculate the distance between min and max vectors
+	//Calculate the 8 corners of the oriented bounding box
+	vector3 v3Corners[8];
+
+	v3Corners[0] = m_v3MinL;
+	v3Corners[1] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MinL.z);
+	v3Corners[2] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MinL.z);
+	v3Corners[3] = vector3(m_v3MaxL.x, m_v3MaxL.y, m_v3MinL.z);
+	v3Corners[4] = vector3(m_v3MinL.x, m_v3MinL.y, m_v3MaxL.z);
+	v3Corners[5] = vector3(m_v3MaxL.x, m_v3MinL.y, m_v3MaxL.z);
+	v3Corners[6] = vector3(m_v3MinL.x, m_v3MaxL.y, m_v3MaxL.z);
+	v3Corners[7] = m_v3MaxL;
+
+	//Globalize the box by multiplying by an matrix4
+	for (uint uIndex = 0; uIndex < 8; ++uIndex)
+	{
+		v3Corners[uIndex] = vector3(m_m4ToWorld * vector4(v3Corners[uIndex], 1.0f));
+	}
+
+	//Set the max and min values equal to the first corner.
+	//Just for setting baseline for min and max calculations.
+	m_v3MaxG = v3Corners[0];
+	m_v3MinG = v3Corners[0];
+
+	//Calculate new min and max for the global box.
+	for (uint i = 1; i < 8; ++i)
+	{
+		if (m_v3MaxG.x < v3Corners[i].x) {
+			m_v3MaxG.x = v3Corners[i].x;
+		}
+		else if (m_v3MinG.x > v3Corners[i].x) {
+			m_v3MinG.x = v3Corners[i].x;
+		}
+
+		if (m_v3MaxG.y < v3Corners[i].y) {
+			m_v3MaxG.y = v3Corners[i].y;
+		}
+		else if (m_v3MinG.y > v3Corners[i].y) {
+			m_v3MinG.y = v3Corners[i].y;
+		}
+
+		if (m_v3MaxG.z < v3Corners[i].z) {
+			m_v3MaxG.z = v3Corners[i].z;
+		}
+		else if (m_v3MinG.z > v3Corners[i].z) {
+			m_v3MinG.z = v3Corners[i].z;
+		}
+	}
+
 	m_v3ARBBSize = m_v3MaxG - m_v3MinG;
 }
 //The big 3
