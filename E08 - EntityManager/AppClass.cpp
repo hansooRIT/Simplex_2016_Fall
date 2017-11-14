@@ -61,7 +61,6 @@ void Application::Update(void)
 	matrix4 mSteve = glm::translate(vector3(2.5f, 0.0f, 0.0f)) * glm::rotate(IDENTITY_M4, -55.0f, AXIS_Z);
 	m_pEntityMngr->SetModelMatrix(mSteve, "Steve");
 
-
 	//Move the last entity added slowly to the right
 	matrix4 lastMatrix = m_pEntityMngr->GetModelMatrix();// get the model matrix of the last added
 	lastMatrix *= glm::translate(IDENTITY_M4, vector3(0.01f, 0.0f, 0.0f)); //translate it

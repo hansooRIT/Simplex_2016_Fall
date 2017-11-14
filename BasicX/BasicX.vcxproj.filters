@@ -199,11 +199,11 @@
     <None Include="..\include\Simplex\Shaders\Text.fs">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="..\include\Simplex\Shaders\Text.vs">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="..\include\Simplex\Shaders\Wireframe.fs">
       <Filter>Shaders</Filter>
+    </None>
+    <None Include="..\include\Simplex\Shaders\Text.vs">
+      <Filter>Source Files\Light</Filter>
     </None>
   </ItemGroup>
 </Project>
