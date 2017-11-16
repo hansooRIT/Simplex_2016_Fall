@@ -276,17 +276,162 @@ void MyRigidBody::AddToRenderList(void)
 
 uint MyRigidBody::SAT(MyRigidBody* const a_pOther)
 {
-	/*
-	Your code goes here instead of this comment;
+	//Get the rotation of A, and convert it to global
+	vector3 rotationA[3];
+	rotationA[0] = vector3(GetModelMatrix() * vector4(AXIS_X, 0.0f));
+	rotationA[1] = vector3(GetModelMatrix() * vector4(AXIS_Y, 0.0f));
+	rotationA[2] = vector3(GetModelMatrix() * vector4(AXIS_Z, 0.0f));
 
-	For this method, if there is an axis that separates the two objects
-	then the return will be different than 0; 1 for any separating axis
-	is ok if you are not going for the extra credit, if you could not
-	find a separating axis you need to return 0, there is an enum in
-	Simplex that might help you [eSATResults] feel free to use it.
-	(eSATResults::SAT_NONE has a value of 0)
-	*/
+	//Get the rotation of B, and convert it to global
+	matrix4 modelWorldMatrixB = a_pOther->GetModelMatrix();
+	vector3 rotationB[3];
+	rotationB[0] = vector3(modelWorldMatrixB * vector4(AXIS_X, 0.0f));
+	rotationB[1] = vector3(modelWorldMatrixB * vector4(AXIS_Y, 0.0f));
+	rotationB[2] = vector3(modelWorldMatrixB * vector4(AXIS_Z, 0.0f));
 
+	//Take the two rotations, and get the dot product to express B in A's coordinate frame.
+	glm::mat3 bToARotation, totalRotation;
+	for (int i = 0; i < 3; i++) {
+		for (int j = 0; j < 3; j++) {
+			bToARotation[i][j] = glm::dot(rotationA[i], rotationB[j]);
+		}
+	}
+
+	// Add in an epsilon term to counteract arithmetic errors when 
+	// two edges are parallel and their cross product is (near) null.
+	// (Above comment was given by the orange book.)
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			totalRotation[i][j] = std::abs(bToARotation[i][j]) + FLT_EPSILON;
+
+	//Calculates the distance between the centers of the two objects, then expresses it in A's coordinate frame.
+	vector3 translate = a_pOther->GetCenterGlobal() - GetCenterGlobal();
+	translate = vector3(glm::dot(translate, rotationA[0]), glm::dot(translate, rotationA[1]), glm::dot(translate, rotationA[2]));
+
+	//Get the distance from the center of the object to the edge of the object.
+	float aDistanceFromMiddle, bDistanceFromMiddle;
+
+	//Axis testing begins! L stands for some axis that we are checking for collisions along.
+	// Test -> L = AX
+	aDistanceFromMiddle = GetHalfWidth().x;
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().x * totalRotation[0][0] + a_pOther->GetHalfWidth().y *
+		totalRotation[0][1] + a_pOther->GetHalfWidth().z * totalRotation[0][2];
+	if (std::abs(translate.x) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AX;
+	}
+
+	// Test -> L = AY
+	aDistanceFromMiddle = GetHalfWidth().y;
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().x * totalRotation[1][0] + a_pOther->GetHalfWidth().y *
+		totalRotation[1][1] + a_pOther->GetHalfWidth().z * totalRotation[1][2];
+	if (std::abs(translate.y) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AY;
+	}
+
+	// Test -> L = AZ
+	aDistanceFromMiddle = GetHalfWidth().z;
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().x * totalRotation[2][0] + a_pOther->GetHalfWidth().y *
+		totalRotation[2][1] + a_pOther->GetHalfWidth().z * totalRotation[2][2];
+	if (std::abs(translate.z) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AZ;
+	}
+
+	// Test -> L = BX
+	aDistanceFromMiddle = GetHalfWidth().x * totalRotation[0][0] + GetHalfWidth().y * totalRotation[1][0]
+		+ GetHalfWidth().z * totalRotation[2][0];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().x;
+	if (std::abs(translate.x) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_BX;
+	}
+
+	// Test -> L = BY
+	aDistanceFromMiddle = GetHalfWidth().x * totalRotation[0][1] + GetHalfWidth().y * totalRotation[1][1]
+		+ GetHalfWidth().z * totalRotation[2][1];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().y;
+	if (std::abs(translate.y) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_BY;
+	}
+
+	// Test -> L = BX
+	aDistanceFromMiddle = GetHalfWidth().x * totalRotation[0][2] + GetHalfWidth().y * totalRotation[1][2]
+		+ GetHalfWidth().z * totalRotation[2][2];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().z;
+	if (std::abs(translate.z) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_BZ;
+	}
+
+	// Test -> L = AX * BX
+	aDistanceFromMiddle = GetHalfWidth().y * totalRotation[2][0] + GetHalfWidth().z * totalRotation[1][0];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().y * totalRotation[0][2]
+		+ a_pOther->GetHalfWidth().z + totalRotation[0][1];
+	if (glm::abs(translate.z * totalRotation[1][0] - translate.y * totalRotation[2][0]) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AXxBX;
+	}
+
+	// Test -> L = AX * BY
+	aDistanceFromMiddle = GetHalfWidth().y * totalRotation[2][1] + GetHalfWidth().z * totalRotation[1][1];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().x * totalRotation[0][2]
+		+ a_pOther->GetHalfWidth().z * totalRotation[0][0];
+	if (glm::abs(translate.z * totalRotation[1][1] - translate.y * totalRotation[2][1]) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AXxBY;
+	}
+
+	// Test -> L = AX * BZ
+	aDistanceFromMiddle = GetHalfWidth().y * totalRotation[2][2] + GetHalfWidth().z * totalRotation[1][2];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().x * totalRotation[0][1]
+		+ a_pOther->GetHalfWidth().y * totalRotation[0][0];
+	if (glm::abs(translate.z * totalRotation[1][2] - translate.y * totalRotation[2][2]) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AXxBZ;
+	}
+
+	// Test -> L = AY * BX
+	aDistanceFromMiddle = GetHalfWidth().x * totalRotation[2][0] + GetHalfWidth().z * totalRotation[0][0];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().y * totalRotation[1][2]
+		+ a_pOther->GetHalfWidth().z  * totalRotation[1][1];
+	if (glm::abs(translate.x * totalRotation[2][0] - translate.z * totalRotation[0][0]) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AYxBX;
+	}
+
+	// Test -> L = AY * BY
+	aDistanceFromMiddle = GetHalfWidth().x * totalRotation[2][1] + GetHalfWidth().z * totalRotation[0][1];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().x * totalRotation[1][2]
+		+ a_pOther->GetHalfWidth().z  * totalRotation[1][0];
+	if (glm::abs(translate.x * totalRotation[2][1] - translate.z * totalRotation[0][1]) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AYxBY;
+	}
+
+	// Test -> L = AY * BZ
+	aDistanceFromMiddle = GetHalfWidth().x * totalRotation[2][2] + GetHalfWidth().z * totalRotation[0][2];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().x * totalRotation[1][1]
+		+ a_pOther->GetHalfWidth().y  * totalRotation[1][0];
+	if (glm::abs(translate.x * totalRotation[2][2] - translate.z * totalRotation[0][2]) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AYxBZ;
+	}
+
+	// Test -> L = AZ * BX
+	aDistanceFromMiddle = GetHalfWidth().x * totalRotation[1][0] + GetHalfWidth().y * totalRotation[0][0];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().y * totalRotation[2][2]
+		+ a_pOther->GetHalfWidth().z * totalRotation[2][1];
+	if (glm::abs(translate.y * totalRotation[0][0] - translate.x * totalRotation[1][0]) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AZxBX;
+	}
+
+	// Test -> L = AZ * BY
+	aDistanceFromMiddle = GetHalfWidth().x * totalRotation[1][1] + GetHalfWidth().y * totalRotation[0][1];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().x * totalRotation[2][2]
+		+ a_pOther->GetHalfWidth().z * totalRotation[2][0];
+	if (glm::abs(translate.y * totalRotation[0][1] - translate.x * totalRotation[1][1]) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AZxBY;
+	}
+
+	// Test -> L = AZ * BX
+	aDistanceFromMiddle = GetHalfWidth().x * totalRotation[1][2] + GetHalfWidth().y * totalRotation[0][2];
+	bDistanceFromMiddle = a_pOther->GetHalfWidth().x * totalRotation[2][1]
+		+ a_pOther->GetHalfWidth().y * totalRotation[2][0];
+	if (glm::abs(translate.y * totalRotation[0][2] - translate.x * totalRotation[1][2]) > aDistanceFromMiddle + bDistanceFromMiddle) {
+		return eSATResults::SAT_AZxBZ;
+	}
+	
 	//there is no axis test that separates this two objects
 	return eSATResults::SAT_NONE;
 }
