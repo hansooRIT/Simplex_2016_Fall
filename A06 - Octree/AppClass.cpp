@@ -2,6 +2,7 @@
 using namespace Simplex;
 void Application::InitVariables(void)
 {
+	disableOctree = false;
 	//Set the position and target of the camera
 	m_pCameraMngr->SetPositionTargetAndUp(
 		vector3(0.0f, 0.0f, 100.0f), //Position
@@ -30,6 +31,7 @@ void Application::InitVariables(void)
 		}
 	}
 	m_uOctantLevels = 1;
+	m_pRoot = new MyOctant(m_uOctantLevels, 5);
 	m_pEntityMngr->Update();
 }
 void Application::Update(void)
@@ -54,9 +56,11 @@ void Application::Display(void)
 	// Clear the screen
 	ClearScreen();
 
-	//display octree
-	//m_pRoot->Display();
-	
+	//display octree if it's not disabled.
+	if (!disableOctree) {
+		m_pRoot->Display();
+	}
+
 	// draw a skybox
 	m_pMeshMngr->AddSkyboxToRenderList();
 	
